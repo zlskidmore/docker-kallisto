@@ -1,8 +1,8 @@
 # work from latest LTS ubuntu release
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 # set the environment variables
-ENV kallisto_version 0.44.0
+ENV kallisto_version 0.45.1
 
 # run update and install necessary tools
 RUN apt-get update -y && apt-get install -y \
