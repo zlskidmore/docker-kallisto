@@ -12,15 +12,24 @@ RUN apt-get update -y && apt-get install -y \
     libhdf5-dev \
     libnss-sss \
     curl \
-    autoconf
+    autoconf \
+    vim \
+    less \
+    wget
 
 # install kallisto
-RUN mkdir -p /usr/bin/kallisto \
-    && curl -SL https://github.com/pachterlab/kallisto/archive/v0.44.0.tar.gz \
-    | tar -zxvC /usr/bin/kallisto
-
+WORKDIR /usr/local/bin/
+RUN curl -SL https://github.com/pachterlab/kallisto/archive/v${kallisto_version}.tar.gz \
+    | tar -zxvC /usr/local/bin/
+WORKDIR /usr/local/bin/kallisto-${kallisto_version}/ext/htslib
+RUN autoheader
+RUN autoconf
 RUN mkdir -p /usr/bin/kallisto/kallisto-${kallisto_version}/build
-RUN cd /usr/bin/kallisto/kallisto-${kallisto_version}/build && cmake ..
-RUN cd /usr/bin/kallisto/kallisto-${kallisto_version}/ext/htslib && autoreconf
-RUN cd /usr/bin/kallisto/kallisto-${kallisto_version}/build && make
-RUN cd /usr/bin/kallisto/kallisto-${kallisto_version}/build && make install
+WORKDIR /usr/local/bin/kallisto-${kallisto_version}/build
+RUN cmake ..
+RUN make
+RUN make install
+WORKDIR /usr/local/bin
+
+# set default command
+CMD ["kallisto"]
